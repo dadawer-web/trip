@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python *)",
-      "Bash(venv/Scripts/python.exe -m pytest test_main.py -v)"
+      "Bash(venv/Scripts/python.exe -m pytest test_main.py -v)",
+      "Bash(sqlite3 *)"
     ]
   }
 }

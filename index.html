@@ -192,7 +192,6 @@
 
     <script>
         const API_BASE = 'http://127.0.0.1:8080';
-
         let allTags = [];
 
         function extractTags(trips) {
@@ -219,7 +218,7 @@
             }
         }
 
-        async function loadTrips(tag = null) {
+        async function fetchTrips(tag = '') {
             setLoading(true);
 
             const url = new URL('/api/trips', API_BASE);
@@ -268,7 +267,7 @@
                 btn.addEventListener('click', () => {
                     container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    loadTrips(btn.dataset.filter);
+                    fetchTrips(btn.dataset.filter);
                 });
             });
         }
@@ -347,7 +346,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadTrips();
+            fetchTrips();
         });
     </script>
 </body>
