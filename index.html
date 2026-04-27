@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Trip - 100种不可思议旅行</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #0a0a0f;
+            font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        .trip-card {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .trip-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.7),
+                        0 0 40px -10px rgba(78, 205, 196, 0.15);
+        }
+
+        .trip-card .card-image {
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .trip-card:hover .card-image {
+            transform: scale(1.08);
+        }
+
+        .trip-card .card-overlay {
+            transition: opacity 0.5s ease;
+        }
+
+        .trip-card:hover .card-overlay {
+            opacity: 0.85;
+        }
+
+        .trip-card .emotion-text {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.4s ease;
+        }
+
+        .trip-card:hover .emotion-text {
+            transform: translateY(-4px);
+        }
+
+        .filter-btn {
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px -4px rgba(255, 255, 255, 0.1);
+        }
+
+        .tag-pill {
+            transition: all 0.3s ease;
+        }
+
+        .tag-pill:hover {
+            transform: scale(1.05);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+
+        .glow-line {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white antialiased">
+    <div class="grain-overlay"></div>
+
+    <!-- Hero Glow Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
+        <div class="hero-glow bg-cyan-500" style="top: -200px; left: -100px;"></div>
+        <div class="hero-glow bg-purple-500" style="top: 10%; right: -200px;"></div>
+        <div class="hero-glow bg-emerald-500" style="bottom: -100px; left: 30%;"></div>
+    </div>
+
+    <div class="relative z-10">
+        <!-- Header -->
+        <header class="px-6 pt-12 pb-8 md:px-12 md:pt-16 md:pb-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium tracking-widest uppercase text-white/40">Vibe Trip</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4 leading-tight">
+                    100种<span class="bg-gradient-to-r from-cyan-300 via-purple-300 to-emerald-300 bg-clip-text text-transparent">不可思议</span>旅行
+                </h1>
+                <p class="text-lg md:text-xl text-white/40 max-w-xl font-light leading-relaxed">
+                    不是为了逃离生活，而是为了不让生活逃离我们。每一处风景，都是一种情绪的答案。
+                </p>
+            </div>
+        </header>
+
+        <!-- Filter Bar -->
+        <section class="px-6 md:px-12 pb-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-medium tracking-widest uppercase text-white/30">按情绪筛选</span>
+                    <div class="flex-1 h-px glow-line"></div>
+                </div>
+                <div id="filterContainer" class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" style="-webkit-overflow-scrolling: touch;">
+                    <button class="filter-btn active flex-shrink-0 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-sm font-medium text-white/80" data-filter="all">
+                        全部
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trip Cards Grid -->
+        <main class="px-6 md:px-12 pb-20">
+            <div class="max-w-7xl mx-auto">
+                <div id="tripsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="px-6 md:px-12 py-8 border-t border-white/5">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-white/20">Vibe Trip - 用情绪丈量世界</p>
+                <p class="text-sm text-white/20">Powered by Pure HTML + Tailwind CSS</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================
+        // Mock Data - 严格遵循 Schema 结构
+        // ============================================
+        const mockTrips = [
+            {
+                id: 1,
+                name: "冰岛蓝湖",
+                slug: "iceland-blue-lagoon",
+                description: "火山岩环绕的地热温泉，奶蓝色的水面上升腾着朦胧蒸汽。",
+                emotion_description: "在硫磺与蒸汽中感受地球的呼吸",
+                cover_image_url: "https://images.unsplash.com/photo-1520769945061-0b4482e369d9?auto=format&fit=crop&w=800&q=80",
+                country: "冰岛",
+                region: "格林达维克",
+                latitude: 63.8804,
+                longitude: -22.4495,
+                best_season: "9月-次年5月",
+                is_featured: 1,
+                tags: [
+                    { id: 1, name: "温泉", slug: "hotspring", color: "#4ECDC4", icon: "♨️" },
+                    { id: 2, name: "极光", slug: "aurora", color: "#A8E6CF", icon: "🌌" }
+                ],
+                created_at: "2026-04-27T10:00:00Z"
+            },
+            {
+                id: 2,
+                name: "京都岚山竹林",
+                slug: "kyoto-arashiyama-bamboo",
+                description: "绵延数百米的翠竹长廊，阳光穿过叶缝洒下斑驳光影。",
+                emotion_description: "穿越千年的绿色隧道，让风带走所有喧嚣",
+                cover_image_url: "https://images.unsplash.com/photo-1528164344705-47542687000d?auto=format&fit=crop&w=800&q=80",
+                country: "日本",
+                region: "京都府",
+                latitude: 35.0094,
+                longitude: 135.6668,
+                best_season: "4月-5月、10月-11月",
+                is_featured: 1,
+                tags: [
+                    { id: 3, name: "森林", slug: "forest", color: "#81C784", icon: "🌲" },
+                    { id: 4, name: "治愈", slug: "healing", color: "#FFB7B2", icon: "🍃" }
+                ],
+                created_at: "2026-04-27T10:00:00Z"
+            },
+            {
+                id: 3,
+                name: "罗弗敦群岛",
+                slug: "lofoten-islands",
+                description: "北极圈内的群岛仙境，红色渔村与锋利的山峰倒映在寂静海面上。",
+                emotion_description: "在世界尽头，看极光与海浪一起跳舞",
+                cover_image_url: "https://images.unsplash.com/photo-1506701169896-2303b922fa55?auto=format&fit=crop&w=800&q=80",
+                country: "挪威",
+                region: "诺尔兰郡",
+                latitude: 68.1468,
+                longitude: 13.9094,
+                best_season: "6月-8月、12月-2月",
+                is_featured: 1,
+                tags: [
+                    { id: 2, name: "极光", slug: "aurora", color: "#A8E6CF", icon: "🌌" },
+                    { id: 5, name: "海岛", slug: "island", color: "#74B9FF", icon: "🏝️" }
+                ],
+                created_at: "2026-04-27T10:00:00Z"
+            },
+            {
+                id: 4,
+                name: "米尔福德峡湾",
+                slug: "milford-sound",
+                description: "塔斯曼海深入南岛内陆的峡湾，瀑布从千米峭壁倾泻而下。",
+                emotion_description: "在峡湾的薄雾中，听见大自然最庄严的祷告",
+                cover_image_url: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+                country: "新西兰",
+                region: "南地大区",
+                latitude: -44.6414,
+                longitude: 167.8974,
+                best_season: "11月-次年3月",
+                is_featured: 0,
+                tags: [
+                    { id: 6, name: "峡湾", slug: "fjord", color: "#5C6BC0", icon: "🏔️" },
+                    { id: 7, name: "徒步", slug: "hiking", color: "#A1887F", icon: "🥾" }
+                ],
+                created_at: "2026-04-27T10:00:00Z"
+            },
+            {
+                id: 5,
+                name: "舍夫沙万",
+                slug: "chefchaouen",
+                description: "摩洛哥北部的蓝色山城，每一条小巷都被涂抹成不同深浅的蓝。",
+                emotion_description: "迷失在蓝色迷宫里，找回内心久违的平静",
+                cover_image_url: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?auto=format&fit=crop&w=800&q=80",
+                country: "摩洛哥",
+                region: "丹吉尔-得土安大区",
+                latitude: 35.1716,
+                longitude: -5.2697,
+                best_season: "3月-5月、9月-11月",
+                is_featured: 0,
+                tags: [
+                    { id: 8, name: "古城", slug: "oldtown", color: "#4DD0E1", icon: "🏛️" },
+                    { id: 9, name: "摄影", slug: "photography", color: "#F48FB1", icon: "📷" }
+                ],
+                created_at: "2026-04-27T10:00:00Z"
+            }
+        ];
+
+        // ============================================
+        // 提取唯一标签
+        // ============================================
+        const allTags = [];
+        const tagMap = new Map();
+
+        mockTrips.forEach(trip => {
+            trip.tags.forEach(tag => {
+                if (!tagMap.has(tag.slug)) {
+                    tagMap.set(tag.slug, tag);
+                    allTags.push(tag);
+                }
+            });
+        });
+
+        // ============================================
+        // 渲染过滤按钮
+        // ============================================
+        function renderFilters() {
+            const container = document.getElementById('filterContainer');
+
+            allTags.forEach(tag => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn flex-shrink-0 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-sm font-medium text-white/80 flex items-center gap-2';
+                btn.dataset.filter = tag.slug;
+                btn.innerHTML = `<span>${tag.icon}</span><span>${tag.name}</span>`;
+                container.appendChild(btn);
+            });
+
+            // 绑定过滤事件
+            container.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderTrips(btn.dataset.filter);
+                });
+            });
+        }
+
+        // ============================================
+        // 渲染旅行卡片
+        // ============================================
+        function renderTrips(filter = 'all') {
+            const grid = document.getElementById('tripsGrid');
+            grid.innerHTML = '';
+
+            const filtered = filter === 'all'
+                ? mockTrips
+                : mockTrips.filter(trip => trip.tags.some(tag => tag.slug === filter));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <p class="text-white/30 text-lg">没有找到符合该情绪的旅行地</p>
+                        <p class="text-white/15 text-sm mt-2">试着换一种情绪看看吧</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach((trip, index) => {
+                const card = document.createElement('article');
+                card.className = `trip-card fade-in stagger-${(index % 5) + 1} rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] cursor-pointer group`;
+
+                const tagsHtml = trip.tags.map(tag =>
+                    `<span class="tag-pill inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium" style="background: ${tag.color}18; color: ${tag.color}; border: 1px solid ${tag.color}30;">
+                        <span>${tag.icon}</span><span>${tag.name}</span>
+                    </span>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <img
+                            src="${trip.cover_image_url}"
+                            alt="${trip.name}"
+                            class="card-image w-full h-full object-cover"
+                            loading="lazy"
+                            onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'"
+                        >
+                        <div class="card-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70"></div>
+                        <div class="absolute top-4 left-4 flex items-center gap-2">
+                            ${trip.is_featured ? `<span class="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-medium backdrop-blur-sm">✨ 精选</span>` : ''}
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-3.5 h-3.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span class="text-xs text-white/50">${trip.country} · ${trip.region}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1">${trip.name}</h3>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="emotion-text text-sm font-medium leading-relaxed mb-3" style="color: #9ca3af;">
+                            "${trip.emotion_description}"
+                        </p>
+                        <p class="text-sm text-white/40 leading-relaxed mb-4 line-clamp-2">
+                            ${trip.description}
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-wrap gap-2">
+                                ${tagsHtml}
+                            </div>
+                            <div class="flex items-center gap-1.5 text-xs text-white/25 flex-shrink-0 ml-3">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>${trip.best_season}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ============================================
+        // 初始化
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderTrips();
+        });
+    </script>
+</body>
+</html>
