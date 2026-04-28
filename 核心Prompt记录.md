@@ -26,7 +26,7 @@
 6.这是最后一次逻辑优化。请修改 `index.html` 中的 JavaScript 部分：
 
 1. 删掉写死的 Mock 数据。
-2. 使用 `fetch` API 在页面初始化时调用 `http://127.0.0.1:8000/api/trips` 获取全部数据。
+2. 使用 `fetch` API 在页面初始化时调用 `http://127.0.0.1:8080/api/trips` 获取全部数据。
 3. 当用户点击标签时，带上查询参数（如 `?tag=xxx`）再次 fetch 接口并更新 DOM。
 4. 增加简单的 Loading 状态提示，增强交互体验。
 
@@ -68,3 +68,36 @@
    4. **保持异步兼容**：确保 FastAPI 的路由依然能够高效返回 JSON 数据。
 
    请输出重构后的完整 `main.py` 代码。
+
+10.此时我发现有逻辑问题，虽然引入了数据库，按理说前端html应该去sqlite里面找图，但是ai还是写死了url，使5张图片都一样同时硬编码数据
+
+我们的后端 FastAPI 已经重构完毕，成功连接了 SQLite 数据库，目前在 `http://127.0.0.1:8080/api/trips` 提供了真实的接口（支持通过 `?tag=xxx` 筛选，返回格式为 `{"items": [...], "total": 5}`）。
+
+现在我们需要进行全链路联调。请帮我修改 `index.html` 中底部的 `<script>` 逻辑部分，要求如下：
+
+1. **删除旧逻辑**：彻底删除之前写死的 Mock 数据列表。
+2. **实现动态请求**：使用原生 `fetch` API 编写一个异步函数 `fetchTrips(tag = '')`。页面首次加载时请求全部数据，当用户点击标签时，带上对应的参数（如 `?tag=hotspring`）请求筛选数据。
+3. **动态渲染 DOM**：拿到接口返回的 `items` 数据后，使用 JavaScript 动态拼接 HTML 字符串，将卡片（包含图片的 `cover_image_url`、名称、描述和标签）渲染到原本的卡片容器中。
+4. **交互优化**：在 `fetch` 期间，在页面上展示一个简单的“加载中... (Loading)”状态，增强 Vibe 视觉体验。
+
+请直接输出重构后的完整 `<script> ... </script>` 代码块。
+
+11.硬编码问题解决，但是前端5张图片都是一样，我复查ai的代码发现，后端/数据库端图片的字段名叫做 image_url，但是前端 JS 在尝试读取 cover_image_url，触发了同一张“海滩大巴”兜底图
+
+现在的项目存在 **SDD (契约) 与实现层面的严重脱节**，导致前端渲染逻辑回退到了 Mock 状态。我们需要进行一次全方位的‘工程对齐’与‘视觉重塑’：
+
+1. **对齐 Schema (SDD)**：
+   - 请检查并重写 `init_db.py`。确保数据库字段与 `schema-design.md` 严格一致。特别是将 `image_url` 统一改为 `cover_image_url`。
+   - 在 `SEED_TRIPS` 中补全 `emotion_description` (情绪文案)、`country` (国家)、`best_season` (季节) 以及 `is_featured` 字段。
+   - 重新运行初始化，确保 `trips.db` 拥有完整的‘灵魂数据’。
+2. **重构后端 (API Logic)**：
+   - 修改 `main.py`。确保查询结果返回的 JSON 键名与新 Schema 匹配。
+   - 优化 `tags` 的处理逻辑，确保它以标准的 JSON List 格式输出给前端。
+3. **视觉超进化 (Vibe DDD)**：
+   - 优化 `index.html` 的 CSS。请在卡片上增加 **Glassmorphism (玻璃拟态)** 效果：增加 `backdrop-filter: blur(12px)` 和微弱的白色描边。
+   - 改进动画：使用 **Web Animations API** 或更精细的 CSS Transition，让卡片在加载时呈现‘由下至上、由暗到明’的丝滑入场感。
+   - **修复 Bug**：修改前端 JS 逻辑，确保 `fetch` 到的 `cover_image_url` 能正确赋值给 `<img>` 标签，彻底干掉那个兜底的默认图。
+4. **工程闭环 (TDD)**：
+   - 更新 `test_main.py`。确保测试用例能覆盖新增的字段。
+
+**目标**：我要在浏览器刷新的一瞬间，看到 5 张不同质感的、具备高级审美冲击力的旅行卡片从暗影中浮现。

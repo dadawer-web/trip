@@ -38,6 +38,11 @@
         }
 
         .trip-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                         box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -45,7 +50,8 @@
         .trip-card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.7),
-                        0 0 40px -10px rgba(78, 205, 196, 0.15);
+                        0 0 40px -10px rgba(78, 205, 196, 0.15),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .trip-card .card-image {
@@ -98,19 +104,19 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.6s ease forwards;
+            animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(40px) scale(0.96); filter: brightness(0.4); }
+            to   { opacity: 1; transform: translateY(0)   scale(1);    filter: brightness(1); }
         }
 
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-1 { animation-delay: 0.08s; }
+        .stagger-2 { animation-delay: 0.16s; }
+        .stagger-3 { animation-delay: 0.24s; }
+        .stagger-4 { animation-delay: 0.32s; }
+        .stagger-5 { animation-delay: 0.40s; }
 
         .glow-line {
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
@@ -288,7 +294,7 @@
 
             trips.forEach((trip, index) => {
                 const card = document.createElement('article');
-                card.className = `trip-card fade-in stagger-${(index % 5) + 1} rounded-2xl overflow-hidden bg-white/[0.03] border border-white/[0.06] cursor-pointer group`;
+                card.className = `trip-card fade-in stagger-${(index % 5) + 1} rounded-2xl overflow-hidden cursor-pointer group`;
 
                 const tagsHtml = (trip.tags || []).map(tag =>
                     `<span class="tag-pill inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium" style="background: ${tag.color}18; color: ${tag.color}; border: 1px solid ${tag.color}30;">
@@ -299,11 +305,10 @@
                 card.innerHTML = `
                     <div class="relative aspect-[4/3] overflow-hidden">
                         <img
-                            src="${trip.cover_image_url || ''}"
-                            alt="${trip.name || ''}"
+                            src="${trip.cover_image_url}"
+                            alt="${trip.name}"
                             class="card-image w-full h-full object-cover"
                             loading="lazy"
-                            onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80'"
                         >
                         <div class="card-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70"></div>
                         <div class="absolute top-4 left-4 flex items-center gap-2">
@@ -317,7 +322,7 @@
                                 </svg>
                                 <span class="text-xs text-white/50">${trip.country || ''} · ${trip.region || ''}</span>
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-1">${trip.name || ''}</h3>
+                            <h3 class="text-xl font-bold text-white mb-1">${trip.name}</h3>
                         </div>
                     </div>
                     <div class="p-5">
